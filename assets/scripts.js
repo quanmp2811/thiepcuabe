@@ -1,6 +1,8 @@
 /* ===== Sửa nội dung thư ở đây ===== */
 const LETTER = {
-  greet: "Chúc mừng sinh nhật anh ❤️",
+  greet: "Chúc mừng sinh nhật anh",
+  greetIcon: "❤️", // nằm cùng dòng với lời chào
+
   paragraphs: [
     "Mới chốc mà chúng ta đã gặp nhau được 4 năm rồi. Nghĩ lại cũng thấy lạ, 4 năm không phải là một khoảng thời gian ngắn, vậy mà em vẫn nhớ những chuyện từ ngày đầu chúng ta gặp nhau như thể mới hôm qua.",
     "Cảm ơn anh vì suốt 4 năm qua vẫn luôn ở bên em. Cảm ơn vì những lúc em vui có anh cùng vui, những lúc em buồn hay mệt mỏi vẫn có anh ở đó để nghe em kể đủ thứ chuyện. Có thể em không phải lúc nào cũng nói ra, nhưng em thật sự rất trân trọng việc anh chưa từng rời đi, vẫn kiên nhẫn và ở bên cạnh em theo cách của anh.",
@@ -97,7 +99,10 @@ window.addEventListener("resize", fitFilm);
 if (window.ResizeObserver) new ResizeObserver(fitFilm).observe(film);
 
 letterBody.innerHTML =
-  `<p class="greet">${LETTER.greet}</p>` +
+  `<p class="greet">${LETTER.greet}` +
+  // &nbsp; giữ trái tim dính với chữ cuối, không bị rớt xuống dòng một mình
+  (LETTER.greetIcon ? `&nbsp;<span class="greet-icon">${LETTER.greetIcon}</span>` : "") +
+  `</p>` +
   LETTER.paragraphs.map((p) => `<p>${p}</p>`).join("") +
   (LETTER.sign ? `<p class="sign">${LETTER.sign}</p>` : "") +
   `<img class="end-img" src="./assets/h3.png" alt="">`;
@@ -113,6 +118,20 @@ function playMusic() {
 }
 document.addEventListener("pointerdown", playMusic);
 document.addEventListener("touchstart", playMusic, { passive: true });
+
+// Tạm dừng nhạc khi ẩn tab / tắt màn hình, phát tiếp khi quay lại
+let pausedByHide = false;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (!player.paused) {
+      player.pause();
+      pausedByHide = true;
+    }
+  } else if (pausedByHide) {
+    pausedByHide = false;
+    player.play().catch(() => {});
+  }
+});
 
 openChk.addEventListener("change", () => {
   if (!openChk.checked) return;
